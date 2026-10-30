@@ -147,7 +147,12 @@ Nõuded (Janeki soovid):
   Noisy-teade testitud emulaatoris: `adb root` + `adb shell am broadcast -a android.media.AUDIO_BECOMING_NOISY`.
 - [x] Avalik GitHubi repo https://github.com/janeklass/ERR-kuulaja (MIT), APK release'ina:
   `gh release create vX.Y ERR-kuulaja.apk --title ... --notes ...`; link "latest" annab alati viimase.
-- [ ] v1.1–v1.9 Janeki telefonis testimata
+- [x] v1.10 (versionCode 11): **Novaatori tab = mängitakse ainult Novaatorit** – leht salvestatakse
+  (`Store.novaatorPage` / `page_novaator`), `Store.allows()` arvestab seda, nii nimekiri kui PlayerService
+  kasutavad sama reeglit. **Uute rubriikide vaikeväärtus** `src_default` / `top_default`: "ainult see" paneb
+  selle false (hiljem lisanduvad rubriigid on väljas), "Kõik sisse/maha" paneb sama väärtuse. Põhjus: Janekil
+  oli vanas versioonis ainult Välismaa sees, uuendusega lisandunud Sport/Kultuur/Novaator/Menu tulid sisse.
+- [ ] v1.1–v1.10 Janeki telefonis testimata (v1.9 oli telefonis: BT-klappide paus, filtrid, Novaator – tagasiside saadud)
 
 ## Järgmised sammud
 1. Janek paigaldab `ERR-kuulaja.apk` telefoni (luba "tundmatutest allikatest"). Uuendamisel

@@ -86,19 +86,25 @@ public final class Store {
     }
 
     // ---- rubriigid ----
+    /**
+     * Rubriik on sees, kui tal on oma väärtus; muidu kehtib "uute rubriikide vaikeväärtus" `src_default`
+     * (pärast "ainult see rubriik" = väljas, pärast "Kõik sisse" = sees; enne kumbagi: kõik peale "Muu").
+     * Nii ei ilmu uuendusega lisandunud rubriigid (nt Sport, Kultuur) ootamatult aktiivsena.
+     */
     public synchronized boolean isEnabled(String source) {
-        return p.getBoolean("src_" + source, !DEFAULT_OFF.contains(source));
+        return p.getBoolean("src_" + source, p.getBoolean("src_default", !DEFAULT_OFF.contains(source)));
     }
 
     public synchronized void setEnabled(String source, boolean on) {
         p.edit().putBoolean("src_" + source, on).apply();
     }
 
-    /** Jätab sisse ainult ühe rubriigi, kõik teised teadaolevad lülitab välja. */
+    /** Jätab sisse ainult ühe rubriigi; kõik teised, ka hiljem lisanduvad, on väljas. */
     public synchronized void setOnly(String source, Collection<String> all) {
         SharedPreferences.Editor e = p.edit();
         for (String s : all) e.putBoolean("src_" + s, s.equals(source));
         e.putBoolean("src_" + source, true);
+        e.putBoolean("src_default", false);
         e.apply();
     }
 
@@ -109,12 +115,13 @@ public final class Store {
     public synchronized void setAll(Collection<String> all, boolean on) {
         SharedPreferences.Editor e = p.edit();
         for (String s : all) e.putBoolean("src_" + s, on);
+        e.putBoolean("src_default", on);
         e.apply();
     }
 
-    // ---- Novaatori alateemad (vaikimisi kõik sees) ----
+    // ---- Novaatori alateemad (vaikimisi kõik sees; `top_default` nagu rubriikidel) ----
     public synchronized boolean isTopicEnabled(String topic) {
-        return p.getBoolean("top_" + topic, true);
+        return p.getBoolean("top_" + topic, p.getBoolean("top_default", true));
     }
 
     public synchronized void setTopicEnabled(String topic, boolean on) {
@@ -124,6 +131,7 @@ public final class Store {
     public synchronized void setTopics(Collection<String> all, boolean on) {
         SharedPreferences.Editor e = p.edit();
         for (String s : all) e.putBoolean("top_" + s, on);
+        e.putBoolean("top_default", on);
         e.apply();
     }
 
@@ -131,13 +139,30 @@ public final class Store {
         SharedPreferences.Editor e = p.edit();
         for (String s : all) e.putBoolean("top_" + s, s.equals(topic));
         e.putBoolean("top_" + topic, true);
+        e.putBoolean("top_default", false);
         e.apply();
     }
 
-    /** Kas artikkel sobib praeguste filtritega: rubriik sees ja (Novaatoril) alateema sees. */
+    // ---- valitud leht: Uudised või Novaator ----
+    /** Kui Novaatori leht on valitud, mängitakse ja näidatakse ainult Novaatori lugusid (alateemade järgi). */
+    public synchronized boolean novaatorPage() {
+        return p.getBoolean("page_novaator", false);
+    }
+
+    public synchronized void setNovaatorPage(boolean on) {
+        p.edit().putBoolean("page_novaator", on).apply();
+    }
+
+    /**
+     * Kas artikkel sobib praeguste filtritega. Novaatori lehel: ainult Novaator + alateema sees
+     * (Uudiste lehe rubriigivalik ei loe). Uudiste lehel: rubriik sees ja (Novaatoril) alateema sees.
+     */
     public boolean allows(Article a) {
-        if (!isEnabled(a.source())) return false;
         String t = a.topic();
+        if (novaatorPage()) {
+            return "Novaator".equals(a.source()) && (t == null || isTopicEnabled(t));
+        }
+        if (!isEnabled(a.source())) return false;
         return t == null || isTopicEnabled(t);
     }
 

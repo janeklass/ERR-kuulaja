@@ -91,6 +91,7 @@ public class MainActivity extends Activity {
                 : android.R.style.Theme_Material_Light_NoActionBar);
         super.onCreate(b);
         store = Store.get(this);
+        novaatorPage = store.novaatorPage();
         PlayerService.installHttpCache(this);
         Feed.init(this);
         setContentView(buildUi());
@@ -529,9 +530,14 @@ public class MainActivity extends Activity {
     private void setPage(boolean nov) {
         if (novaatorPage == nov) return;
         novaatorPage = nov;
+        store.setNovaatorPage(nov);   // mängija järjekord järgib sama lehte
         styleTabs();
         rebuildList();
         list.setSelection(0);
+        if (PlayerService.current != null && !store.allows(PlayerService.current)) {
+            Toast.makeText(this, nov ? "Järgmisena mängivad Novaatori lood" : "Järgmisena mängivad valitud rubriigid",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** Lõpetab mängimise, eemaldab teavituse ja sulgeb äpi. */
@@ -678,7 +684,7 @@ public class MainActivity extends Activity {
             }
         } else {
             String order = store.shuffle() ? "juhuslikus järjekorras" : "uuemad enne";
-            nowRubric.setText(st.isEmpty() ? "Kuulamata artiklid · " + order : st);
+            nowRubric.setText(st.isEmpty() ? (store.novaatorPage() ? "Novaator · " : "Kuulamata artiklid · ") + order : st);
             nowRubric.setTextColor(ui.text2);
             nowTitle.setText(PlayerService.isRunning() ? "ERR kuulaja" : "Vajuta esitusnuppu, et alustada");
             nowImage.setVisibility(View.GONE);
@@ -728,12 +734,7 @@ public class MainActivity extends Activity {
         List<Article> out = new ArrayList<>();
         int unheard = 0;
         for (Article a : Feed.snapshot()) {
-            if (novaatorPage) {
-                String t = a.topic();
-                if (!"Novaator".equals(a.source()) || (t != null && !store.isTopicEnabled(t))) continue;
-            } else if (!store.allows(a)) {
-                continue;
-            }
+            if (!store.allows(a)) continue;   // sama reegel, mida kasutab mängija järjekord
             boolean heard = store.isHeard(a.id);
             if (!heard && !store.isNoAudio(a.id)) unheard++;
             if (heard && !showHeard) continue;
@@ -763,14 +764,10 @@ public class MainActivity extends Activity {
         filterBtn.setBackground(ui.ripple(ui.bordered(0, all ? ui.text : ui.accent, 1.5f), ui.text));
         // Tabirea parem serv
         long lf = Feed.lastFetch();
-        if (novaatorPage && !store.isEnabled("Novaator")) {
-            footer.setText("Novaator on Uudiste lehel väljas – neid ei mängita");
-        } else {
-            footer.setText(unheard + " kuulamata · " + store.heardCount() + " kuulatud"
-                    + (showHeard ? " (näidatakse)" : "")
-                    + (lf > 0 ? " · " + DateUtils.formatDateTime(this, lf,
-                    DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR) : ""));
-        }
+        footer.setText(unheard + " kuulamata · " + store.heardCount() + " kuulatud"
+                + (showHeard ? " (näidatakse)" : "")
+                + (lf > 0 ? " · " + DateUtils.formatDateTime(this, lf,
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR) : ""));
     }
 
     // ---------- nimekiri ----------
