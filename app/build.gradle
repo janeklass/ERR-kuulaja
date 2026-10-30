@@ -1,0 +1,29 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ee.janek.errkuulaja'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'ee.janek.errkuulaja'
+        minSdk 26
+        targetSdk 34
+        versionCode 9
+        versionName '1.8'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Lihtsuse mõttes allkirjastatakse debug-võtmega, et APK oleks kohe paigaldatav
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
