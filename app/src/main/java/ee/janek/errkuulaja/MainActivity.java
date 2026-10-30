@@ -86,11 +86,11 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle b) {
-        ui = new Ui(this);
+        store = Store.get(this);
+        ui = new Ui(this, store.theme());
         setTheme(ui.night ? android.R.style.Theme_Material_NoActionBar
                 : android.R.style.Theme_Material_Light_NoActionBar);
         super.onCreate(b);
-        store = Store.get(this);
         novaatorPage = store.novaatorPage();
         PlayerService.installHttpCache(this);
         Feed.init(this);
@@ -169,6 +169,15 @@ public class MainActivity extends Activity {
         header.addView(spinner, sl);
         filterBtn = capsBordered("Filtrid", v -> showFilters());
         header.addView(filterBtn, new LinearLayout.LayoutParams(WRAP, dp(34)));
+        // Hele/tume: heledas kuu (→ tume), tumedas päike (→ hele); valik jääb meelde
+        ImageButton themeBtn = squareButton(ui.night ? R.drawable.ic_sun : R.drawable.ic_moon, 34, false, v -> {
+            store.setTheme(ui.night ? "light" : "dark");
+            recreate();
+        });
+        themeBtn.setContentDescription(ui.night ? "Hele kujundus" : "Tume kujundus");
+        LinearLayout.LayoutParams thl = new LinearLayout.LayoutParams(dp(34), dp(34));
+        thl.setMargins(dp(8), 0, 0, 0);
+        header.addView(themeBtn, thl);
         ImageButton closeBtn = squareButton(R.drawable.ic_close, 34, false, v -> quit());
         closeBtn.setContentDescription("Lõpeta ja sulge");
         LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(dp(34), dp(34));

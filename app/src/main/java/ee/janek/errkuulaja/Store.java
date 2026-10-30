@@ -143,6 +143,15 @@ public final class Store {
         e.apply();
     }
 
+    // ---- kujundus: "system" (telefoni seade järgi), "light" või "dark" ----
+    public synchronized String theme() {
+        return p.getString("theme", "system");
+    }
+
+    public synchronized void setTheme(String t) {
+        p.edit().putString("theme", t).apply();
+    }
+
     // ---- valitud leht: Uudised või Novaator ----
     /** Kui Novaatori leht on valitud, mängitakse ja näidatakse ainult Novaatori lugusid (alateemade järgi). */
     public synchronized boolean novaatorPage() {

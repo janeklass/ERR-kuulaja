@@ -152,7 +152,10 @@ Nõuded (Janeki soovid):
   kasutavad sama reeglit. **Uute rubriikide vaikeväärtus** `src_default` / `top_default`: "ainult see" paneb
   selle false (hiljem lisanduvad rubriigid on väljas), "Kõik sisse/maha" paneb sama väärtuse. Põhjus: Janekil
   oli vanas versioonis ainult Välismaa sees, uuendusega lisandunud Sport/Kultuur/Novaator/Menu tulid sisse.
-- [ ] v1.1–v1.10 Janeki telefonis testimata (v1.9 oli telefonis: BT-klappide paus, filtrid, Novaator – tagasiside saadud)
+- [x] v1.11 (versionCode 12): **hele/tume nupp päises** (kuu heledas → tume, päike tumedas → hele; vektorikoonid
+  `ic_moon`/`ic_sun`). `Store.theme()` = "system" (vaikimisi, telefoni järgi) / "light" / "dark";
+  `Ui(Context, theme)`; vajutus salvestab ja teeb `recreate()`. Janek eelistab heledat.
+- [ ] v1.1–v1.11 Janeki telefonis testimata (v1.9 oli telefonis: BT-klappide paus, filtrid, Novaator – tagasiside saadud)
 
 ## Järgmised sammud
 1. Janek paigaldab `ERR-kuulaja.apk` telefoni (luba "tundmatutest allikatest"). Uuendamisel

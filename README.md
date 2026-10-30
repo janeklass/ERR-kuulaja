@@ -21,7 +21,7 @@ Vajab Android 8.0 või uuemat. Äpp ei kogu isikuandmeid ega vaja kontot.
 - **Filtrid** eraldi aknas: rubriigid sisse/välja (pikk vajutus = kuulan ainult seda), "Kõik sisse/maha",
   "Näita ka kuulatud", "Unusta kuulamise ajalugu"
 - Leht **Novaator**: ainult Novaatori lood, filtreeritavad alateemade kaupa (Tervis, Keskkond, Tehnika …)
-- Kujundus "Ajaleht": paberitoon, serif-pealkirjad, teravad nurgad; tume režiim süsteemi seade järgi
+- Kujundus "Ajaleht": paberitoon, serif-pealkirjad, teravad nurgad; hele/tume nupp päises (vaikimisi telefoni seade järgi)
 - Lõpeta-nupp (×) peatab mängimise ja sulgeb äpi
 
 ## Kuidas ERR-i heli leitakse

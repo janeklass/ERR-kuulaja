@@ -29,9 +29,11 @@ final class Ui {
     final Typeface serifItalic = Typeface.create("serif", Typeface.ITALIC);
     private final float density;
 
-    Ui(Context c) {
-        night = (c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+    /** @param theme "system" = telefoni seade järgi, "light" = alati hele, "dark" = alati tume. */
+    Ui(Context c, String theme) {
+        boolean sysNight = (c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
                 == Configuration.UI_MODE_NIGHT_YES;
+        night = "dark".equals(theme) || (!"light".equals(theme) && sysNight);
         density = c.getResources().getDisplayMetrics().density;
         if (night) {
             bg = 0xFF15130F; surface = 0xFF1E1B16; surface2 = 0xFF2E2922;
