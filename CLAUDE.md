@@ -141,7 +141,13 @@ Nõuded (Janeki soovid):
 - [x] v1.7 (versionCode 8): kujundus "Ajaleht" (serif, paber/tint, teravad nurgad, hairline-read)
 - [x] v1.8 (versionCode 9): nimekiri põhiosa, mini-mängija all, filtrid dialoogis – **emulaatoris kontrollitud**
   (30.10.2026: nimekiri, mängimine, ajariba, filtrite dialoog töötavad)
-- [ ] v1.1–v1.8 Janeki telefonis testimata
+- [x] v1.9 (versionCode 10): paus ka siis, kui Bluetooth-klapid tühjaks saavad – lisaks AUDIO_BECOMING_NOISY
+  teatele jälgib `PlayerService` `AudioDeviceCallback`-iga heliseadmeid: kui mängimise ajal kaob kõrvaklapi-tüüpi
+  seade (BT A2DP/SCO/BLE, juhtmega, USB, kuuldeaparaat), läheb pausile (olek "Paus – kõrvaklapid lahti").
+  Noisy-teade testitud emulaatoris: `adb root` + `adb shell am broadcast -a android.media.AUDIO_BECOMING_NOISY`.
+- [x] Avalik GitHubi repo https://github.com/janeklass/ERR-kuulaja (MIT), APK release'ina:
+  `gh release create vX.Y ERR-kuulaja.apk --title ... --notes ...`; link "latest" annab alati viimase.
+- [ ] v1.1–v1.9 Janeki telefonis testimata
 
 ## Järgmised sammud
 1. Janek paigaldab `ERR-kuulaja.apk` telefoni (luba "tundmatutest allikatest"). Uuendamisel

@@ -12,6 +12,8 @@ import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceCallback;
+import android.media.AudioDeviceInfo;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
@@ -89,6 +91,40 @@ public class PlayerService extends Service implements
         }
     };
 
+    /**
+     * Teine, sõltumatu "klapid kadusid" kontroll: AUDIO_BECOMING_NOISY ei tule kõigil telefonidel,
+     * kui Bluetooth-klapid tühjaks saavad või välja lülitatakse. Kui mängimise ajal kaob heliseadmete
+     * nimekirjast mõni kõrvaklapi-tüüpi seade, läheb mängija pausile.
+     */
+    private final AudioDeviceCallback deviceCb = new AudioDeviceCallback() {
+        @Override
+        public void onAudioDevicesRemoved(AudioDeviceInfo[] removed) {
+            if (!playing || removed == null) return;
+            for (AudioDeviceInfo d : removed) {
+                if (d.isSink() && isHeadphone(d.getType())) {
+                    pause();
+                    setStatus("Paus – kõrvaklapid lahti");
+                    return;
+                }
+            }
+        }
+    };
+
+    private static boolean isHeadphone(int type) {
+        switch (type) {
+            case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
+            case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
+            case AudioDeviceInfo.TYPE_WIRED_HEADSET:
+            case AudioDeviceInfo.TYPE_WIRED_HEADPHONES:
+            case AudioDeviceInfo.TYPE_USB_HEADSET:
+            case AudioDeviceInfo.TYPE_HEARING_AID:
+                return true;
+            default:
+                return Build.VERSION.SDK_INT >= 31
+                        && (type == AudioDeviceInfo.TYPE_BLE_HEADSET || type == AudioDeviceInfo.TYPE_BLE_SPEAKER);
+        }
+    }
+
     private final Runnable retryEmpty = () -> {
         if (current == null && !playing) playNext(true);
     };
@@ -145,6 +181,7 @@ public class PlayerService extends Service implements
                 .setOnAudioFocusChangeListener(this)
                 .setWillPauseWhenDucked(false)
                 .build();
+        am.registerAudioDeviceCallback(deviceCb, main);
 
         NotificationChannel ch = new NotificationChannel(CHANNEL, "Kuulamine", NotificationManager.IMPORTANCE_LOW);
         ch.setShowBadge(false);
@@ -211,6 +248,7 @@ public class PlayerService extends Service implements
         releasePlayer();
         abandonFocus();
         unregisterNoisy();
+        am.unregisterAudioDeviceCallback(deviceCb);
         main.removeCallbacksAndMessages(null);
         ex.shutdownNow();
         session.setActive(false);
