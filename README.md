@@ -49,3 +49,6 @@ Kood: `app/src/main/java/ee/janek/errkuulaja/`
 - `Images.java` – pisipiltide laadija, `Ui.java` – värvid, kirjad ja joonistusabid, `Article.java` – andmeklass
 
 Arendusmärkmed ja versioonide ajalugu: `CLAUDE.md`.
+
+## Litsents
+MIT – vt `LICENSE`.
